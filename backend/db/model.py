@@ -96,7 +96,44 @@ class Checkpoint(Base):
 # this will be highly confidential cause it will intergrated to central command and rn we ain't use it unless we won't have the ground testing
 
 class Officer(Base):
-        
+    
+
+
+     
+    
+    __tablename__ = "officer"
+ 
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+
+    name: Mapped[str] = mapped_column(
+        String(255), nullable=False
+    )
+
+
+    badge_no: Mapped[str] = mapped_column(
+        String(100), unique=True, nullable=False
+    )
+
+
+    checkpoint_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("checkpoint.id"), nullable=True
+        # nullable: central command officers aren't tied to one checkpoint
+    )
+
+    role: Mapped[str] = mapped_column(
+        kunalEnum(OfficerRole), nullable=False
+    )
+
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, default=True, server_default=text("true")
+    )
+
+
+
+    # relationship
+
  
 
 
