@@ -134,6 +134,65 @@ class Officer(Base):
 
     # relationship
 
+
+
+
+
+class CheckpointEvent(Base):
+    __tablename__ = "checkpoint_event"
+ 
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+
+
+    journey_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("journey.id"), nullable=False
+    )
+
+
+    checkpoint_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("checkpoint.id"), nullable=False
+    )
+
+
+    officer_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("officer.id"), nullable=False
+    )
+
+
+    registered_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, default=datetime.utcnow
+    )
+
+
+    expected_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime, nullable=True
+        # Expected arrival from previous checkpoint
+    )
+
+
+    delay_minutes: Mapped[int] = mapped_column(
+        Integer, default=0, server_default=text("0")
+        # registered_at - expected_at in minutes
+    )
+
+
+    risk_score_snapshot: Mapped[Optional[int]] = mapped_column(
+        Integer, nullable=True
+        # Journey risk score at this exact moment
+    )
+
+
+    status: Mapped[str] = mapped_column(
+        kunalEnum(EventStatus), nullable=False, default=EventStatus.NORMAL
+    )
+
+    
+    notes: Mapped[Optional[str]] = mapped_column(
+        Text, nullable=True
+    )
+
  
 
 
