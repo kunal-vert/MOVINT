@@ -193,6 +193,73 @@ class CheckpointEvent(Base):
         Text, nullable=True
     )
 
+
+
+
+    #relationship
+
+
+
+
+
+
+class Permit (Base):
+    __tablename__ = "permit"
+
+
+    id:Mapped[uuid.UUID]  = mapped_column(
+       UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )  
+
+    traveler_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey=("traveler.id"), nullable=False
+    )
+
+    journey_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("journey.id"), nullable=True
+    )
+
+
+     # consider here we can't take the enum we will take the wide ranger 
+    type: Mapped[Optional[str]]  = mapped_column(
+        String(200), nullable=True
+    )
+
+    Permit_Occupation: Mapped[str]  = mapped_column(
+        String(200), nullable=False
+    )
+
+
+    issued_by: Mapped[Optional[str]] = mapped_column(
+        String(255), nullable=True
+        # "State Govt of Manipur" / "MHA" / "Embassy"
+    )
+
+
+    valid_from: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False
+    )
+
+
+    valid_to: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False
+    )
+
+    permitted_states: Mapped[Optional[List[str]]] = mapped_column(
+        ARRAY(String), nullable=True
+        # ["Manipur", "Nagaland"] — zone violation check at each event... Later when we will develop the Agent , this would be highly imperative
+    )
+
+
+    #relationship
+
+
+
+    
+
+
+        
+
  
 
 
