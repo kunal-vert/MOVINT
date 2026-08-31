@@ -18,16 +18,16 @@ async def AdminSignup(
     ):
 
     try:
-        adminName = data.username
+        username = data.username
         email = data.email
         password = data.password
 
         hashed_password = password_hasher(password)
 
         new_admin = Admin(
-            adminName = adminName,
-            Email = email,
-            password = hashed_password,
+            username = username,
+            email = email,
+            hash_password = hashed_password,
 
         )
 
@@ -38,7 +38,7 @@ async def AdminSignup(
         return {
             "message": "Admin Successful created",
             "admin" : {
-                "username": new_admin.adminName,
+                "username": new_admin.username,
                 "email": new_admin.email,
                 "password": new_admin.hash_password
             }
@@ -54,8 +54,11 @@ async def AdminSignup(
 
 
 @router.post("/signin")
-async def AdminSignin(data: SignInRequest):
-
+async def AdminSignin(
+    data: SignInRequest,
+    db: Session = Depends(get_db)
+    ):
+    
 
     return {
         "message": "Admin Signin ho gaya bhaiwa :)"
