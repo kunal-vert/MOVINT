@@ -7,7 +7,7 @@ def password_hasher(password: str):
     return password_hash.hash(password)
 
 
-def password_verifer(password: str, hashpassword: str):
+def password_verifier(password: str, hashpassword: str):
     return password_hash.verify(password, hashpassword)
 
 

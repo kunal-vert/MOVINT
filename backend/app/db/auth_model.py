@@ -1,10 +1,10 @@
 import uuid
 
 from datetime import datetime
-from sqlalchemy.orm import Mapped, mapped_column, relationships
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import String, DateTime
-from backend.app.db.database import Base
+from app.db.database import Base
 
 
 class Admin (Base):
