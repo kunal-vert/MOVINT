@@ -372,12 +372,76 @@ class RiskLog(Base):
         # Full breakdown of what contributed to the score
     )
 
-    
+
     calculated_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, server_default=func.now()
     )
  
     # ── relationships ──  
+
+
+#Highly crucial table dawg
+class Journey(Base):
+    __tablename__ = "journey"
+
+
+    id: Mapped[uuid.UUID]  = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+
+    traveler_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("traveler.id"), nullable=False
+    )
+
+
+    entry_checkpoint_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("checkpoint.id"), nullable=False
+    )
+
+
+    exit_checkpoint_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("checkpoint.id"), nullable=True
+        # NULL until traveler registers at exit airport
+    )
+
+
+    status: Mapped[str] = mapped_column(
+        kunalEnum(JourneyStatus), nullable=False, default=JourneyStatus.ACTIVE
+    )
+
+
+    current_risk_score: Mapped[int] = mapped_column(
+        Integer, default=0, server_default=text("0")
+    )
+
+
+    entered_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False
+    )
+
+
+
+    exited_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime, nullable=True
+        # NULL until journey completes
+    )
+
+
+    expected_exit_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False
+        # Visa expiry or declared departure — overdue detection key
+    )
+
+
+    declared_states: Mapped[Optional[List[str]]] = mapped_column(
+        ARRAY(String), nullable=True
+        # e.g. ["Manipur", "Nagaland"] — what they said they'd visit
+    )
+
+    
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, server_default=func.now()
+    )  
 
 
    
