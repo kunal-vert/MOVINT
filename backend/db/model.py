@@ -316,6 +316,18 @@ class CheckpointEvent(Base):
 
 
     #relationship
+
+
+
+class Incident(Base):
+    __tablename__ = "incident"
+
+
+    # this table perform things at niche although we wont' gonna write 
+
+
+    
+        
     
     
     
