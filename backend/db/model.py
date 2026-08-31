@@ -326,7 +326,12 @@ class Incident(Base):
     # this table perform things at niche although we wont' gonna write 
 
 
-    
+
+#System-generated. Central command reads this.
+#  Backend agents write here — Overstay Watch, Movement Anomaly, etc.
+
+class Alert(Base):
+    __tablename__ = "alert"
         
     
     
