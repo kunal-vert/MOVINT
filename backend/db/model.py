@@ -336,7 +336,50 @@ class Alert(Base):
     
     
     
-        
+
+class RiskLog(Base):
+    __tablename__ = "risk_log"     
+
+    id: Mapped[uuid.UUID]  = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    ) 
+
+
+
+    journey_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("journey.id"), nullable=False
+    )
+
+
+    checkpoint_event_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("checkpoint_event.id"), nullable=True
+        # NULL when a scheduled agent triggers recalculation (not an event)
+    )
+
+
+    previous_score: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0
+    )
+
+
+    risk_score: Mapped[int] = mapped_column(
+
+
+        Integer, nullable=False
+    )
+    factors: Mapped[Optional[dict]] = mapped_column(
+        JSONB, nullable=True
+        # Full breakdown of what contributed to the score
+    )
+
+    
+    calculated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, server_default=func.now()
+    )
+ 
+    # ── relationships ──  
+
+
    
 
 
