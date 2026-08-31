@@ -6,6 +6,7 @@ from app.db.auth_model import Admin
 from app.db.database import get_db
 from app.schemas.auth import SignupRequest, SignInRequest
 from app.utils.admin_password import password_hasher, password_verifier
+from app.utils.jwt import create_access_tokens
 
 router = APIRouter(
     prefix= "/Admin",
@@ -79,7 +80,23 @@ async def AdminSignin(data: SignInRequest,db: Session = Depends(get_db)):
 
         )
 
-    passwordverification = password_verifier(data.password == Admin.hash_password)
+    passwordverification = password_verifier(data.password == admin.hash_password)
+
+    if not passwordverification:
+        raise HTTPException(
+            status_code= status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username/email or password"
+        )
+
+    access_token  = create_access_tokens(str(admin.id))
+
+
+    return {
+         "message": "Admin Signin ho gaya bhaiwa :)",
+        "token": access_token,
+        "token_type": "bearer"
+
+    }
 
              
 
@@ -96,6 +113,4 @@ async def AdminSignin(data: SignInRequest,db: Session = Depends(get_db)):
 
     
 
-    return {
-        "message": "Admin Signin ho gaya bhaiwa :)"
-    }
+    
