@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException,Depends
+from fastapi import APIRouter, HTTPException,Depends,status
+from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.db.auth_model import Admin
 from app.db.database import get_db
 from app.schemas.auth import SignupRequest, SignInRequest
-from app.utils.admin_password import password_hasher
+from app.utils.admin_password import password_hasher, password_verifier
 
 router = APIRouter(
     prefix= "/Admin",
@@ -24,7 +25,7 @@ async def AdminSignup(
 
         hashed_password = password_hasher(password)
 
-        new_admin = Admin(
+        new_admin = await Admin(
             username = username,
             email = email,
             hash_password = hashed_password,
@@ -53,11 +54,46 @@ async def AdminSignup(
         )   
 
 
+
+
 @router.post("/signin")
-async def AdminSignin(
-    data: SignInRequest,
-    db: Session = Depends(get_db)
-    ):
+async def AdminSignin(data: SignInRequest,db: Session = Depends(get_db)):
+    identifier = data.identifier
+
+
+    admin = (
+        db.query(Admin)
+        .filter(
+            or_(
+                Admin.username == identifier,
+                Admin.email == identifier
+            )
+        )
+        .first()
+    )
+
+    if not admin:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail= "Invalid username/email or password"
+
+        )
+
+    passwordverification = password_verifier(data.password == Admin.hash_password)
+
+             
+
+    
+
+        
+   
+
+        
+
+
+        
+        
+
     
 
     return {
