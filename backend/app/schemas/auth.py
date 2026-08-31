@@ -4,7 +4,6 @@ from pydantic import BaseModel, EmailStr, Field
 class SignupRequest(BaseModel):
     username: str =  Field(
         min_length= 10,
-        pattern= r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$",
         examples=["StrongPassword123!"],
         description=(
             "Username must be unique"
@@ -13,6 +12,7 @@ class SignupRequest(BaseModel):
     password: str = Field(
         min_length=20,
         max_length=130,
+        pattern= r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).+$",
         examples=["StrongPassword123!"],
         description=(
             "Password must contain at least one lowercase letter, "
