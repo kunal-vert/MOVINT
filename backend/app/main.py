@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from db import model 
-import database
+from backend.app.db import model 
+import backend.app.db.database as database
 
 
 app = FastAPI()

@@ -9,9 +9,9 @@ from sqlalchemy.dialects.postgresql import UUID, ARRAY,JSONB
 
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
-from database import Base
+from backend.app.db.database import Base
 
-from EnumUtili import (CheckpointType, OfficerRole, JourneyStatus, PermitType, EventStatus, IncidentType, IncidentSeverity, AlertType, AlertSeverity)
+from backend.app.utils.EnumUtili import (CheckpointType, OfficerRole, JourneyStatus, PermitType, EventStatus, IncidentType, IncidentSeverity, AlertType, AlertSeverity)
 
 
 # ENUMS
@@ -441,7 +441,10 @@ class Journey(Base):
     
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, server_default=func.now()
-    )  
+    ) 
+
+    #relationship 
+
 
 
    
