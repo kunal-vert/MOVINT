@@ -8,10 +8,12 @@ JWT_ALGO = settings.jwt_algorithm
 
 def create_access_tokens(admin_id: str):
 
-    expire = datetime.now(timezone.utc) + timedelta(minutes=60)
+
+    # for now we have neglected the time as we deploy we gonna set timer kinda less for visual
+    # expire = datetime.now(timezone.utc) + timedelta(minutes=60)
 
     playload = {
-        "expire_time": expire,
+        # "expire_time": expire,
         "sub": admin_id
     }
 
