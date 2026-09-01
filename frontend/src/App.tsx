@@ -1,8 +1,11 @@
 import React from 'react'
+import { Input } from './components/ui/input'
 
 const App = () => {
   return (
-    <div className='' >App</div>
+    <div className='' >
+      <Input/>
+    </div>
   )
 }
 

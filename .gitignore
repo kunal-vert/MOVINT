@@ -6,5 +6,7 @@ backend/dist/
 backend/wheels/
 backend/*.egg-info
 
+backend/.env
+backend/app/.env
 # Backend Virtual environment
 backend/.venv/
