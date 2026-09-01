@@ -2,8 +2,8 @@ from datetime import datetime, timedelta, timezone
 import jwt
 from app.core.config import settings
 
-JWT_KEY = settings.jwt_secret_key
-JWT_ALGO = settings.jwt_algorithm
+JWT_KEY = settings.JWT_SECRET_KEY
+JWT_ALGO = settings.JWT_ALGORITHM
 
 
 def create_access_tokens(admin_id: str):
