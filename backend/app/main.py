@@ -14,6 +14,11 @@ app.include_router(
     prefix="/MOVINT/V2"
 )
 
+app.include_router(
+    
+    prefix="/MOVINT/V2"
+)
+
 
 @app.get("/")
 async def root():
