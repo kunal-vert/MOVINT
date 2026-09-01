@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 @router.post("/signup")
-async def AdminSignup(
+def AdminSignup(
     data: SignupRequest,
     db: Session = Depends(get_db)
     ):
@@ -26,7 +26,7 @@ async def AdminSignup(
 
         hashed_password = password_hasher(password)
 
-        new_admin = await Admin(
+        new_admin =  Admin(
             username = username,
             email = email,
             hash_password = hashed_password,
@@ -58,7 +58,7 @@ async def AdminSignup(
 
 
 @router.post("/signin")
-async def AdminSignin(data: SignInRequest,db: Session = Depends(get_db)):
+def AdminSignin(data: SignInRequest,db: Session = Depends(get_db)):
     identifier = data.identifier
 
 
@@ -80,7 +80,7 @@ async def AdminSignin(data: SignInRequest,db: Session = Depends(get_db)):
 
         )
 
-    passwordverification = password_verifier(data.password == admin.hash_password)
+    passwordverification = password_verifier(data.password , admin.hash_password)
 
     if not passwordverification:
         raise HTTPException(
