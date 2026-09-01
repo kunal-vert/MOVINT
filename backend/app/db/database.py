@@ -1,11 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from app.core.config import settings
+
 
 # This wil be for  PostgreSQL — PostGIS ready (for future spatial queries)..... already we have written im postGIS for leaflet js
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:12345@localhost:5432/NE_MOVINT"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True, echo=True)
+
+engine = create_engine(settings.POSTGRS_URL , pool_pre_ping=True, echo=True)
 
 SessionLocal = sessionmaker(autoflush=False, autocommit = False, bind=engine)
 
