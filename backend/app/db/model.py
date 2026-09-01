@@ -19,6 +19,8 @@ from backend.app.utils.EnumUtili import (CheckpointType, OfficerRole, JourneySta
 
 
 
+
+
 class Traveler(Base):
     __tablename__ = "traveler"
 
@@ -34,6 +36,8 @@ class Traveler(Base):
 
     gender: Mapped[str]  = mapped_column(String(15), nullable= True, default="unknown")
 
+    occupation: Mapped[Optional[str]] = mapped_column (String(50), nullable=False) 
+
     visa_type: Mapped[str]  = mapped_column(str(100), nullable=False)
 
     visa_number: Mapped[Optional[str]] = mapped_column(String(100), unique=True, nullable=True, default="xxxxx")
@@ -46,7 +50,137 @@ class Traveler(Base):
 
     Entry_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, server_default=func.now())
 
+
+
     #relationship
+    journeys: Mapped[List["Journey"]]  = relationship(
+        "Journey", back_populates="traveler", foreign_keys="Journey.traveler_id"
+    )
+
+
+    permits: Mapped[List["Permit"]] = relationship(
+        "Permit", back_populates="traveler"
+    )
+
+
+
+
+
+
+
+
+
+#Highly crucial table dawg
+class Journey(Base):
+    __tablename__ = "journey"
+
+
+    id: Mapped[uuid.UUID]  = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+
+    traveler_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("traveler.id"), nullable=False
+    )
+
+
+    entry_checkpoint_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("checkpoint.id"), nullable=False
+    )
+
+
+    exit_checkpoint_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("checkpoint.id"), nullable=True
+        # NULL until traveler registers at exit airport
+    )
+
+
+
+    visa_type: Mapped[str] = mapped_column( String(100), nullable=False, )
+
+
+
+    occupation: Mapped[str]  = mapped_column(
+        String(100), nullable=False
+    )
+
+
+    status: Mapped[str] = mapped_column(
+        kunalEnum(JourneyStatus), nullable=False, default=JourneyStatus.ACTIVE
+    )
+
+
+    current_risk_score: Mapped[int] = mapped_column(
+        Integer, default=0, server_default=text("0")
+    )
+
+
+    entered_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False
+    )
+
+
+
+    exited_at: Mapped[Optional[datetime]] = mapped_column(
+       DateTime(timezone=True), nullable=True,
+    )
+
+
+    expected_exit_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=False,
+        # Visa expiry or declared departure — overdue detection key
+    )
+
+
+    declared_states: Mapped[Optional[List[str]]] = mapped_column(
+        ARRAY(String), nullable=True
+        # e.g. ["Manipur", "Nagaland"] — what they said they'd visit
+    )
+
+    
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, server_default=func.now()
+    ) 
+
+    #relationship 
+
+    # Journey → Traveler traveler:
+    Mapped["Traveler"] = relationship( "Traveler", back_populates="journeys", foreign_keys=[traveler_id], )
+
+     
+    # Journey → Entry Checkpoint 
+    entry_checkpoint: Mapped["Checkpoint"] = relationship( "Checkpoint", back_populates="entry_journeys", foreign_keys=[entry_checkpoint_id], ) 
+
+    # Journey → Exit Checkpoint 
+    exit_checkpoint: Mapped[Optional["Checkpoint"]] = relationship( "Checkpoint", back_populates="exit_journeys", foreign_keys=[exit_checkpoint_id], )
+
+
+    # Journey → CheckpointEvents
+    events: Mapped[list["CheckpointEvent"]] = relationship( "CheckpointEvent", back_populates="journey", )
+
+
+    # Journey → Permits
+    permits: Mapped[list["Permit"]] = relationship( "Permit", back_populates="journey", ) 
+
+
+    # Journey → Alerts
+    alerts: Mapped[list["Alert"]] = relationship( "Alert", back_populates="journey", )
+
+
+    # Journey → RiskLogs 
+    risk_logs: Mapped[list["RiskLog"]] = relationship( "RiskLog", back_populates="journey", )
+
+
+    # Journey → Incidents
+    incidents: Mapped[list["Incident"]] = relationship( "Incident", back_populates="journey", )
+
+
+
+
+
+
+
+
 
 
 
@@ -96,9 +230,6 @@ class Checkpoint(Base):
 # this will be highly confidential cause it will intergrated to central command and rn we ain't use it unless we won't have the ground testing
 
 class Officer(Base):
-    
-
-
      
     
     __tablename__ = "officer"
@@ -133,6 +264,9 @@ class Officer(Base):
 
 
     # relationship
+
+
+
 
 
 
@@ -203,6 +337,9 @@ class CheckpointEvent(Base):
 
 
 
+
+
+
 class Permit (Base):
     __tablename__ = "permit"
 
@@ -252,6 +389,9 @@ class Permit (Base):
 
 
     #relationship
+
+
+
 
 
 
@@ -319,11 +459,16 @@ class CheckpointEvent(Base):
 
 
 
+
+
+
 class Incident(Base):
     __tablename__ = "incident"
 
 
     # this table perform things at niche although we wont' gonna write 
+
+
 
 
 
@@ -335,6 +480,9 @@ class Alert(Base):
         
     
     
+
+
+
     
 
 class RiskLog(Base):
@@ -380,70 +528,9 @@ class RiskLog(Base):
     # ── relationships ──  
 
 
-#Highly crucial table dawg
-class Journey(Base):
-    __tablename__ = "journey"
-
-
-    id: Mapped[uuid.UUID]  = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
-
-    traveler_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("traveler.id"), nullable=False
-    )
-
-
-    entry_checkpoint_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("checkpoint.id"), nullable=False
-    )
-
-
-    exit_checkpoint_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("checkpoint.id"), nullable=True
-        # NULL until traveler registers at exit airport
-    )
-
-
-    status: Mapped[str] = mapped_column(
-        kunalEnum(JourneyStatus), nullable=False, default=JourneyStatus.ACTIVE
-    )
-
-
-    current_risk_score: Mapped[int] = mapped_column(
-        Integer, default=0, server_default=text("0")
-    )
-
-
-    entered_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False
-    )
 
 
 
-    exited_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime, nullable=True
-        # NULL until journey completes
-    )
-
-
-    expected_exit_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False
-        # Visa expiry or declared departure — overdue detection key
-    )
-
-
-    declared_states: Mapped[Optional[List[str]]] = mapped_column(
-        ARRAY(String), nullable=True
-        # e.g. ["Manipur", "Nagaland"] — what they said they'd visit
-    )
-
-    
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, server_default=func.now()
-    ) 
-
-    #relationship 
 
 
 
