@@ -504,6 +504,30 @@ class CheckpointEvent(Base):
 
 
     #relationship
+    journey: Mapped["Journey"] = relationship(
+        "Journey",
+        back_populates="events",
+    )
+
+    checkpoint: Mapped["Checkpoint"] = relationship(
+        "Checkpoint",
+        back_populates="events",
+    )
+
+    officer: Mapped[Optional["Officer"]] = relationship(
+        "Officer",
+        back_populates="events",
+    )
+
+    incidents: Mapped[List["Incident"]] = relationship(
+        "Incident",
+        back_populates="checkpoint_event",
+    )
+
+    risk_logs: Mapped[List["RiskLog"]] = relationship(
+        "RiskLog",
+        back_populates="checkpoint_event",
+    )
 
 
 
