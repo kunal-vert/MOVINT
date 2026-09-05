@@ -76,7 +76,7 @@ class Traveler(Base):
 
 
 
-#Highly crucial table dawg
+#Highly crucial table dawg!
 class Journey(Base):
     __tablename__ = "journey"
 
@@ -157,24 +157,35 @@ class Journey(Base):
     # Journey → Entry Checkpoint 
     entry_checkpoint: Mapped["Checkpoint"] = relationship( "Checkpoint", back_populates="entry_journeys", foreign_keys=[entry_checkpoint_id], ) 
 
+
+
     # Journey → Exit Checkpoint 
     exit_checkpoint: Mapped[Optional["Checkpoint"]] = relationship( "Checkpoint", back_populates="exit_journeys", foreign_keys=[exit_checkpoint_id], )
+
+
 
 
     # Journey → CheckpointEvents
     events: Mapped[list["CheckpointEvent"]] = relationship( "CheckpointEvent", back_populates="journey", )
 
 
+
+
     # Journey → Permits
     permits: Mapped[list["Permit"]] = relationship( "Permit", back_populates="journey", ) 
+
+
 
 
     # Journey → Alerts
     alerts: Mapped[list["Alert"]] = relationship( "Alert", back_populates="journey", )
 
 
+
+
     # Journey → RiskLogs 
     risk_logs: Mapped[list["RiskLog"]] = relationship( "RiskLog", back_populates="journey", )
+
 
 
     # Journey → Incidents
@@ -203,7 +214,7 @@ class Checkpoint(Base):
         String(100), nullable=False
     )  
 
-    post_Checking: Mapped[str] = mapped_column(
+    checkpoint_type: Mapped[str] = mapped_column(
         kunalEnum(CheckpointType), nullable=False, default=kunalEnum(CheckpointType)
     )
 
@@ -227,6 +238,28 @@ class Checkpoint(Base):
 
 
     #relationship
+
+    officers: Mapped[List["Officer"]] = relationship(
+        "Officer",
+        back_populates="checkpoint",
+    )
+
+    entry_journeys: Mapped[List["Journey"]] = relationship(
+        "Journey",
+        back_populates="entry_checkpoint",
+        foreign_keys="Journey.entry_checkpoint_id",
+    )
+
+    exit_journeys: Mapped[List["Journey"]] = relationship(
+        "Journey",
+        back_populates="exit_checkpoint",
+        foreign_keys="Journey.exit_checkpoint_id",
+    )
+
+    events: Mapped[List["CheckpointEvent"]] = relationship(
+        "CheckpointEvent",
+        back_populates="checkpoint",
+    )
 
 
 
