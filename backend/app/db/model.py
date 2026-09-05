@@ -428,6 +428,15 @@ class Permit (Base):
 
 
     #relationship
+    traveler: Mapped["Traveler"] = relationship(
+        "Traveler",
+        back_populates="permits",
+    )
+
+    journey: Mapped["Journey"] = relationship(
+        "Journey",
+        back_populates="permits",
+    )
 
 
 
