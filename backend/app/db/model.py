@@ -132,7 +132,7 @@ class Journey(Base):
     )
 
 
-    expected_exit_at: Mapped[Optional[datetime]] = mapped_column(
+    expected_exit_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False,
         # Visa expiry or declared departure — overdue detection key
     )
@@ -150,8 +150,8 @@ class Journey(Base):
 
     #relationship 
 
-    # Journey → Traveler traveler:
-    Mapped["Traveler"] = relationship( "Traveler", back_populates="journeys", foreign_keys=[traveler_id], )
+    # Journey → Traveler 
+    traveler:Mapped["Traveler"] = relationship( "Traveler", back_populates="journeys", foreign_keys=[traveler_id], )
 
      
     # Journey → Entry Checkpoint 
