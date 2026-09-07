@@ -19,8 +19,6 @@ from backend.app.utils.EnumUtili import (CheckpointType, OfficerRole, JourneySta
 
 
 
-
-
 class Traveler(Base):
     __tablename__ = "traveler"
 
@@ -103,12 +101,6 @@ class Journey(Base):
 
 
     visa_type: Mapped[str] = mapped_column( String(100), nullable=False, )
-
-
-
-    occupation: Mapped[str]  = mapped_column(
-        String(100), nullable=False
-    )
 
 
     status: Mapped[str] = mapped_column(
@@ -437,6 +429,7 @@ class Permit (Base):
         "Journey",
         back_populates="permits",
     )
+
 
 
 
