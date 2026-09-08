@@ -90,8 +90,12 @@ class TravelerIn(BaseModel):
     @field_validator("date_of_birth")
     @classmethod
     def date_must_be_past(cls, v:date) -> date:
-        if v >= date.year(2004):
-            raise ValueError("date_of_birth must be 18 yrs laadle...")
+        today = date.today()
+      
+        age = today.year - v.year - ((today.month, today.day) < (v.month, v.day))
+        
+        if age < 18:
+            raise ValueError("Traveler must be at least 18 years old Ladle.....")
         return v
 
     
