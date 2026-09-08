@@ -74,6 +74,9 @@ class TravelerIn(BaseModel):
 
     @field_validator("passport_id")
     @classmethod
+    def passport_must_be_uppercase(cls, v: str) -> str:
+        passport_after_validation = v.strip().upper()
+        return passport_after_validation
 
     
 
