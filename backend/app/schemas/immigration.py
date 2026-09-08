@@ -80,6 +80,15 @@ class TravelerIn(BaseModel):
 
     
 
+    @field_validator("nationality", "full_name")
+    @classmethod
+    def strip_whitespace_for_NAT_and_name(cls, v:str):
+        after_validation = v.strip()
+        return after_validation
+
+    
+    
+
     
 
 
