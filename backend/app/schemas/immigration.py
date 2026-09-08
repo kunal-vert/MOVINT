@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator, ConfigD
 
 
 
-class PostDetailsTraveler(BaseModel):
+class TravelerIn(BaseModel):
     passport_id: str = Field(
         min_length=7,
         max_length=50,
@@ -66,11 +66,14 @@ class PostDetailsTraveler(BaseModel):
         description="Path to uploaded photo — set by system after photo capture"
     )
 
-    
+
     criminal_record: bool = Field(
         default=False,
         description="Declared or verified criminal record flag"
     )
+
+    @field_validator("passport_id")
+    @classmethod
 
     
 
