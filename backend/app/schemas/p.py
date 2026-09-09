@@ -91,7 +91,7 @@ class RegisterTravelerRequest(BaseModel):
         default=None,
         description="States traveler declares they will visit"
     )
-    
+
     expected_exit_at: datetime = Field(
         description="Visa expiry / declared departure. Must be future."
     )
@@ -121,9 +121,21 @@ class RegisterTravelerRequest(BaseModel):
       
         age = today.year - v.year - ((today.month, today.day) < (v.month, v.day))
         
-        if age < 18:
+        if age <= 18:
             raise ValueError("Traveler must be at least 18 years old Ladle.....")
         return v
+
+
+    @field_validator("expected_exit_at")
+    @classmethod
+    def exit_in_future(cls, v:datetime) -> datetime:
+        if v <= datetime.now():
+            raise ValueError(
+                "expected_exit_at must be a future datetime"
+            )
+
+        return v
+    
 
     
 
