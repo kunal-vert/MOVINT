@@ -1,11 +1,11 @@
-from datetime import date
-from typing import Optional
+from datetime import date, datetime
+from typing import Optional, List
 from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
 
 
 
 
-class TravelerIn(BaseModel):
+class RegisterTravelerRequest(BaseModel):
     passport_id: str = Field(
         min_length=7,
         max_length=50,
@@ -39,28 +39,6 @@ class TravelerIn(BaseModel):
         description="male / female / unknown"
     )
 
-
-    occupation: str = Field(
-        min_length=2,
-        max_length=50,
-        description="Declared occupation. e.g. Botanist, Journalist"
-    )
-
-
-    visa_type: str = Field(
-        min_length=2,
-        max_length=100,
-        description="Tourist Visa / Research Visa / Journalist Visa / Business Visa"
-    )
-
-
-    visa_number: Optional[str] = Field(
-        default=None,
-        max_length=100,
-        description="Visa document number if available"
-    )
-
-
     photo_url: Optional[str] = Field(
         default=None,
         description="Path to uploaded photo — set by system after photo capture"
@@ -71,6 +49,55 @@ class TravelerIn(BaseModel):
         default=False,
         description="Declared or verified criminal record flag"
     )
+
+
+    # lol => permit field-----------------------
+
+    occupation: str = Field(
+            min_length=2,
+            max_length=50,
+            description="Declared occupation. e.g. Botanist, Journalist"
+        )
+    
+    
+    visa_type: str = Field(
+            min_length=2,
+            max_length=100,
+            description="Tourist Visa / Research Visa / Journalist Visa / Business Visa"
+        )
+    
+    
+    visa_number: Optional[str] = Field(
+            default=None,
+            max_length=100,
+            description="Visa document number if available"
+        )
+
+    permit_type: Optional[str] = Field(
+        default=None, max_length=200,
+        description="ILP / RAP / Research Permit / Press Visa"
+    )
+    permit_issued_by: Optional[str] = Field(default=None, max_length=255)
+
+    permit_valid_from: datetime
+
+    permit_valid_to: datetime
+
+    permit_permitted_states: Optional[List[str]] = Field(default=None)
+
+    #jounrey fields
+
+    declared_states: Optional[List[str]] = Field(
+        default=None,
+        description="States traveler declares they will visit"
+    )
+    
+    expected_exit_at: datetime = Field(
+        description="Visa expiry / declared departure. Must be future."
+    )
+
+
+
 
     @field_validator("passport_id")
     @classmethod
