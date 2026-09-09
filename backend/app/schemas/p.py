@@ -149,7 +149,7 @@ class RegisterTravelerRequest(BaseModel):
 
     
     
-class TrvelerOut(BaseModel):
+class TravelerOut(BaseModel):
     passport_id:     str
     full_name:       str
     nationality:     str
@@ -174,14 +174,23 @@ class JourneyOut(BaseModel):
 
 
 
-class PostCheckPostEvents(BaseModel):
-    pass
+   
+
+
+
+class RegisterTravelerResponse(BaseModel):
+    traveler:              TravelerOut
+    journey:               JourneyOut
+    permit:                PermitOut
+    is_returning_traveler: bool   
+    past_journey_count:    int    
+    initial_risk_score:    int     
+    message:               str 
 
 
 
 
-class GetCheckPostEvents(BaseModel):
-    pass
+
 
 
 
