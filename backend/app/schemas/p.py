@@ -99,6 +99,9 @@ class RegisterTravelerRequest(BaseModel):
 
 
 
+
+     # validator
+
     @field_validator("passport_id")
     @classmethod
     def passport_must_be_uppercase(cls, v: str) -> str:
@@ -112,6 +115,7 @@ class RegisterTravelerRequest(BaseModel):
     def strip_whitespace_for_NAT_and_name(cls, v:str) -> str :
         after_validation = v.strip()
         return after_validation
+    
 
     
     @field_validator("date_of_birth")
@@ -135,29 +139,38 @@ class RegisterTravelerRequest(BaseModel):
             )
 
         return v
+
+
+
+    
     
 
     
 
     
     
-
-    
-
-
-
-
-
-
-
-class GetDetailsTraveler(BaseModel):
-    pass
-
+class TrvelerOut(BaseModel):
+    passport_id:     str
+    full_name:       str
+    nationality:     str
+    date_of_birth:   date
+    gender:          Optional[str]
+    photo_url:       Optional[str]
+    watch_flag:      bool   
+    criminal_record: bool   
+    created_at:      datetime
 
 
 
-class GetPastRecord(BaseModel):
-    pass
+
+class JourneyOut(BaseModel):
+    status:              str         
+    current_risk_score:  int
+    entered_at:          datetime
+    exited_at:           Optional[datetime]
+    expected_exit_at:    datetime
+    declared_states:     Optional[List[str]]
+    created_at:          datetime
 
 
 
