@@ -162,6 +162,18 @@ class TravelerOut(BaseModel):
 
 
 
+class PermitOut(BaseModel):
+    visa_type:        str       
+    visa_number:      Optional[str]
+    occupation:       str       
+    type:             Optional[str]
+    issued_by:        Optional[str]
+    permit_valid_from: datetime
+    permit_valid_to:   datetime
+    permitted_states: Optional[List[str]]
+
+
+
 
 class JourneyOut(BaseModel):
     status:              str         
