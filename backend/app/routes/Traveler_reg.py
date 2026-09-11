@@ -38,6 +38,19 @@ def Immgiration_reg( data: RegisterTravelerRequest,  db: Session = Depends(get_d
                 details = "Invalid or Inactive entry Checkpoint"
             )
 
+        traveler = (
+            db.query(Traveler)
+            .filter(
+                Traveler.passport_id == data.passport_id
+            )
+            .first()
+        )
+
+        is_returning_traveler = False
+        past_journey_count = 0
+
+        
+
     except:
         pass    
 
