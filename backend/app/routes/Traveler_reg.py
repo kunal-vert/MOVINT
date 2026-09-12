@@ -35,7 +35,7 @@ def Immgiration_reg( data: RegisterTravelerRequest,  db: Session = Depends(get_d
         if Checkpoint is None:
             raise HTTPException(
                 status_code= status.HTTP_400_BAD_REQUEST,
-                details = "Invalid or Inactive entry Checkpoint"
+                details = "Invalid or Inactive entry Checkpoint_area"
             )
 
         traveler = (
