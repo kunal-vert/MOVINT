@@ -49,6 +49,8 @@ def Immgiration_reg( data: RegisterTravelerRequest,  db: Session = Depends(get_d
         is_returning_traveler = False
         past_journey_count = 0
 
+        New_traveler = 
+
         
 
     except:
