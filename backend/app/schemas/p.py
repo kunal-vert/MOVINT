@@ -140,6 +140,15 @@ class RegisterTravelerRequest(BaseModel):
 
         return v
 
+    @model_validator(mode="after")
+    def permit_dates_check(self) -> RegisterTravelerRequest:
+        if self.permit_valid_to <= self.permit_valid_from:
+            raise ValueError(
+                'permit_valid_to  must be after permit_valid_from'
+            )
+        return self
+
+
 
 
     
