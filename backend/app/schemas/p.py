@@ -159,6 +159,9 @@ class RegisterTravelerRequest(BaseModel):
     
     
 class TravelerOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+
     passport_id:     str
     full_name:       str
     nationality:     str
@@ -172,6 +175,7 @@ class TravelerOut(BaseModel):
 
 
 class PermitOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     visa_type:        str       
     visa_number:      Optional[str]
     occupation:       str       
@@ -185,6 +189,7 @@ class PermitOut(BaseModel):
 
 
 class JourneyOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     status:              str         
     current_risk_score:  int
     entered_at:          datetime
@@ -201,7 +206,7 @@ class JourneyOut(BaseModel):
 
 class RegisterTravelerResponse(BaseModel):
     traveler:              TravelerOut
-    journey:               JourneyOut
+    journey:               List[JourneyOut]
     permit:                PermitOut
     is_returning_traveler: bool   
     past_journey_count:    int    
