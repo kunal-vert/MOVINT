@@ -54,7 +54,7 @@ def Immgiration_reg( data: RegisterTravelerRequest,  db: Session = Depends(get_d
         
 
     except:
-        pass    
+        raise error   
 
 
 @router.get("/Immgiration/view")
