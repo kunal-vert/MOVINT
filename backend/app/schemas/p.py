@@ -212,6 +212,15 @@ class RegisterTravelerResponse(BaseModel):
     past_journey_count:    int    
     initial_risk_score:    int     
     message:               str 
+    
+class RegisterTravelerResponse(BaseModel):
+    traveler:              TravelerOut
+    journey:               List[JourneyOut]
+    permit:                PermitOut
+    is_returning_traveler: bool   
+    past_journey_count:    int    
+    initial_risk_score:    int     
+    message:               str 
 
 
 
