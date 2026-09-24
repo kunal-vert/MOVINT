@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from typing import Optional, List
+from uuid import UUID
 from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
 
 
@@ -50,6 +51,9 @@ class RegisterTravelerRequest(BaseModel):
         description="Declared or verified criminal record flag"
     )
 
+    entry_checkpoint_id: UUID = Field(
+        description="UUID of the entry checkpoint where traveler is registering"
+    )
 
     # lol => permit field-----------------------
 
@@ -212,19 +216,6 @@ class RegisterTravelerResponse(BaseModel):
     past_journey_count:    int    
     initial_risk_score:    int     
     message:               str 
-    
-class RegisterTravelerResponse(BaseModel):
-    traveler:              TravelerOut
-    journey:               List[JourneyOut]
-    permit:                PermitOut
-    is_returning_traveler: bool   
-    past_journey_count:    int    
-    initial_risk_score:    int     
-    message:               str 
-
-
-
-
 
 
 
