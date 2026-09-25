@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
+from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func, desc
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -215,12 +217,105 @@ def Immigration_reg(
 
 # ──────────────────────────────────────────────
 #  GET  /Immigration/view
-#  List all travelers
+#  List all tracked nationals — sorted by most
+#  recent entry, paginated (default 10)
 # ──────────────────────────────────────────────
 
 @router.get("/view")
-def Immigration_view(db: Session = Depends(get_db)):
-    pass
+def Immigration_view(
+    db: Session = Depends(get_db),
+    page: int = Query(default=1, ge=1, description="Page number"),
+    per_page: int = Query(default=10, ge=1, le=100, description="Results per page"),
+    status: Optional[str] = Query(default=None, description="Filter by journey status: ACTIVE, COMPLETED, OVERDUE, FLAGGED"),
+    nationality: Optional[str] = Query(default=None, description="Filter by nationality"),
+    watch_flag: Optional[bool] = Query(default=None, description="Filter watch-listed travelers"),
+):
+    """
+    List all tracked nationals.
+
+    Sorted by **most recent journey entry** — if a traveler enters again,
+    they bubble to the top of the list.
+    """
+
+    # ── Subquery: latest entered_at & journey count per traveler ──
+    journey_stats = (
+        db.query(
+            Journey.traveler_id,
+            func.max(Journey.entered_at).label("latest_entered_at"),
+            func.count(Journey.id).label("total_journeys"),
+        )
+        .group_by(Journey.traveler_id)
+    )
+
+    # If filtering by journey status, restrict the subquery
+    if status:
+        journey_stats = journey_stats.filter(Journey.status == status)
+
+    journey_stats = journey_stats.subquery()
+
+    # ── Main query: Traveler + journey stats ──
+    query = (
+        db.query(
+            Traveler,
+            journey_stats.c.latest_entered_at,
+            journey_stats.c.total_journeys,
+        )
+        .outerjoin(journey_stats, Traveler.id == journey_stats.c.traveler_id)
+    )
+
+    # Apply optional filters
+    if nationality:
+        query = query.filter(Traveler.nationality.ilike(f"%{nationality}%"))
+
+    if watch_flag is not None:
+        query = query.filter(Traveler.watch_flag == watch_flag)
+
+    # ── Count total (before pagination) ──
+    total_count = query.count()
+
+    # ── Sort by most recent entry (DESC), NULLs last ──
+    query = query.order_by(
+        desc(journey_stats.c.latest_entered_at).nullslast()
+    )
+
+    # ── Paginate ──
+    offset = (page - 1) * per_page
+    results = query.offset(offset).limit(per_page).all()
+
+    # ── Build response rows ──
+    travelers_out = []
+
+    for traveler, latest_entered_at, total_journeys in results:
+
+        # Fetch the latest journey for this traveler (current status + risk)
+        latest_journey = (
+            db.query(Journey)
+            .filter(Journey.traveler_id == traveler.id)
+            .order_by(Journey.entered_at.desc())
+            .first()
+        )
+
+        travelers_out.append({
+            "passport_id": traveler.passport_id,
+            "full_name": traveler.full_name,
+            "nationality": traveler.nationality,
+            "watch_flag": traveler.watch_flag,
+            "criminal_record": traveler.criminal_record,
+            "current_journey_status": latest_journey.status if latest_journey else None,
+            "current_risk_score": latest_journey.current_risk_score if latest_journey else None,
+            "total_journeys": total_journeys or 0,
+            "entered_at": str(latest_entered_at) if latest_entered_at else None,
+            "expected_exit_at": (
+                str(latest_journey.expected_exit_at) if latest_journey else None
+            ),
+        })
+
+    return {
+        "total_count": total_count,
+        "page": page,
+        "per_page": per_page,
+        "travelers": travelers_out,
+    }
 
 
 # ──────────────────────────────────────────────

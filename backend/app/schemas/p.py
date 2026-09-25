@@ -218,5 +218,23 @@ class RegisterTravelerResponse(BaseModel):
     message:               str 
 
 
+class TravelerSummary(BaseModel):
+    """Lightweight traveler row for the list/tracking view."""
+    passport_id:             str
+    full_name:               str
+    nationality:             str
+    watch_flag:              bool
+    criminal_record:         bool
+    current_journey_status:  Optional[str]
+    current_risk_score:      Optional[int]
+    total_journeys:          int
+    entered_at:              Optional[datetime]
+    expected_exit_at:        Optional[datetime]
 
 
+class TravelerListResponse(BaseModel):
+    """Paginated list of tracked nationals."""
+    total_count: int
+    page:        int
+    per_page:    int
+    travelers:   List[TravelerSummary]
