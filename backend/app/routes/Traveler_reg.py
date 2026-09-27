@@ -12,7 +12,10 @@ from app.db.model import (
     Permit,
     Checkpoint,
 )
-from app.schemas.p import RegisterTravelerRequest
+from app.schemas.p import (
+    RegisterTravelerRequest,
+    TravelerListResponse,
+)
 from app.utils.EnumUtili import JourneyStatus
 
 
@@ -221,7 +224,7 @@ def Immigration_reg(
 #  recent entry, paginated (default 10)
 # ──────────────────────────────────────────────
 
-@router.get("/view")
+@router.get("/view", response_model=TravelerListResponse)
 def Immigration_view(
     db: Session = Depends(get_db),
     page: int = Query(default=1, ge=1, description="Page number"),
@@ -237,7 +240,7 @@ def Immigration_view(
     they bubble to the top of the list.
     """
 
-    # ── Subquery: latest entered_at & journey count per traveler ──
+    # ── Subquery: TRUE lifetime stats per traveler (unfiltered by status) ──
     journey_stats = (
         db.query(
             Journey.traveler_id,
@@ -245,15 +248,10 @@ def Immigration_view(
             func.count(Journey.id).label("total_journeys"),
         )
         .group_by(Journey.traveler_id)
+        .subquery()
     )
 
-    # If filtering by journey status, restrict the subquery
-    if status:
-        journey_stats = journey_stats.filter(Journey.status == status)
-
-    journey_stats = journey_stats.subquery()
-
-    # ── Main query: Traveler + journey stats ──
+    # ── Main query: Traveler + lifetime journey stats ──
     query = (
         db.query(
             Traveler,
@@ -263,14 +261,28 @@ def Immigration_view(
         .outerjoin(journey_stats, Traveler.id == journey_stats.c.traveler_id)
     )
 
-    # Apply optional filters
+    # ── Filter by journey status (INNER JOIN on matching journeys only) ──
+    if status:
+        status_subquery = (
+            db.query(Journey.traveler_id)
+            .filter(Journey.status == status)
+            .distinct()
+            .subquery()
+        )
+        query = query.join(
+            status_subquery,
+            Traveler.id == status_subquery.c.traveler_id,
+        )
+
+    # ── Filter by nationality ──
     if nationality:
         query = query.filter(Traveler.nationality.ilike(f"%{nationality}%"))
 
+    # ── Filter by watch list flag ──
     if watch_flag is not None:
         query = query.filter(Traveler.watch_flag == watch_flag)
 
-    # ── Count total (before pagination) ──
+    # ── Total count for pagination ──
     total_count = query.count()
 
     # ── Sort by most recent entry (DESC), NULLs last ──
@@ -282,18 +294,27 @@ def Immigration_view(
     offset = (page - 1) * per_page
     results = query.offset(offset).limit(per_page).all()
 
-    # ── Build response rows ──
+    # ── Batch fetch latest journey for this page's travelers (avoids N+1 queries) ──
+    traveler_ids = [traveler.id for traveler, _, _ in results]
+    latest_journey_map = {}
+
+    if traveler_ids:
+        page_journeys = (
+            db.query(Journey)
+            .filter(Journey.traveler_id.in_(traveler_ids))
+            .order_by(Journey.entered_at.desc())
+            .all()
+        )
+        # Retain the most recent journey per traveler
+        for j in page_journeys:
+            if j.traveler_id not in latest_journey_map:
+                latest_journey_map[j.traveler_id] = j
+
+    # ── Build response rows conforming to TravelerSummary ──
     travelers_out = []
 
     for traveler, latest_entered_at, total_journeys in results:
-
-        # Fetch the latest journey for this traveler (current status + risk)
-        latest_journey = (
-            db.query(Journey)
-            .filter(Journey.traveler_id == traveler.id)
-            .order_by(Journey.entered_at.desc())
-            .first()
-        )
+        latest_journey = latest_journey_map.get(traveler.id)
 
         travelers_out.append({
             "passport_id": traveler.passport_id,
@@ -304,10 +325,8 @@ def Immigration_view(
             "current_journey_status": latest_journey.status if latest_journey else None,
             "current_risk_score": latest_journey.current_risk_score if latest_journey else None,
             "total_journeys": total_journeys or 0,
-            "entered_at": str(latest_entered_at) if latest_entered_at else None,
-            "expected_exit_at": (
-                str(latest_journey.expected_exit_at) if latest_journey else None
-            ),
+            "entered_at": latest_entered_at,
+            "expected_exit_at": latest_journey.expected_exit_at if latest_journey else None,
         })
 
     return {
