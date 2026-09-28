@@ -235,6 +235,6 @@ class TravelerSummary(BaseModel):
 class TravelerListResponse(BaseModel):
     """Paginated list of tracked nationals."""
     total_count: int
-    page:        int
-    per_page:    int
+    pages:        int
+    per_pages:    int
     travelers:   List[TravelerSummary]
