@@ -9,7 +9,12 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.db.model import Checkpoint, Journey, Permit, Traveler
-from app.schemas.p import RegisterTravelerRequest, TravelerListResponse
+from app.schemas.p import (
+    RegisterTravelerRequest,
+    RegisterTravelerResponse,
+    TravelerDetailsResponse,
+    TravelerListResponse,
+)
 from app.utils.EnumUtili import JourneyStatus
 
 
@@ -79,7 +84,11 @@ def _traveler_details(traveler: Traveler) -> dict[str, Any]:
     }
 
 
-@router.post("/reg", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/reg",
+    status_code=status.HTTP_201_CREATED,
+    response_model=RegisterTravelerResponse,
+)
 def Immigration_reg(data: RegisterTravelerRequest, db: Session = Depends(get_db)):
     """Register a new or returning traveler and start an active journey."""
     checkpoint = (
@@ -295,7 +304,7 @@ def Immigration_view(
     }
 
 
-@router.get("/view/{passport_id}")
+@router.get("/view/{passport_id}", response_model=TravelerDetailsResponse)
 def Immigration_view_by_passport(passport_id: str, db: Session = Depends(get_db)):
     """Return one traveler and their journey/permit history by passport ID."""
     normalized_passport_id = passport_id.strip().upper()
