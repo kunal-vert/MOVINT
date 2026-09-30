@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import "./App.css";
 
+// MOVINT Field Intelligence — Traveler Registry & Movement Tracking
 const API_BASE = "http://localhost:8000/MOVINT/V2/Immigration";
 
 type JourneyStatus = "ACTIVE" | "COMPLETED" | "OVERDUE" | "FLAGGED";
