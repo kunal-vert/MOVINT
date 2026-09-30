@@ -200,3 +200,4 @@ class TravelerListResponse(BaseModel):
     pages: int
     per_pages: int
     travelers: list[TravelerSummary]
+    # people: int
