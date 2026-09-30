@@ -10,3 +10,14 @@ backend/.env
 backend/app/.env
 # Backend Virtual environment
 backend/.venv/
+
+# General ignores
+__pycache__/
+*.pyc
+*.pyo
+.env
+node_modules/
+.venv/
+venv/
+dist/
+build/
