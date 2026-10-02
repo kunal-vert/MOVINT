@@ -8,9 +8,13 @@ import deploymentPoints from './components/deployment/deploymentPoints'
 import RoutePreview from './components/common/RoutePreview'
 import Geomap from './pages/Geomap'
 import Tracking from './pages/Tracking'
+import EdenSignIn from './components/auth/EdenSignIn'
 
 export default function App() {
   return (
+    <Routes>
+      <Route path="/login" element={<EdenSignIn />} />
+      <Route path="/*" element={
     <div className="flex min-h-screen flex-col bg-black px-8 pt-[22px] max-[600px]:px-[14px] max-[600px]:pt-[14px]">
       <Navbar />
       <Routes>
@@ -27,5 +31,7 @@ export default function App() {
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </div>
+      } />
+    </Routes>
   )
 }
