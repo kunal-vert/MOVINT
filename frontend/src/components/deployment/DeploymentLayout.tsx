@@ -5,5 +5,5 @@ export interface DeploymentLayoutProps {
 }
 
 export default function DeploymentLayout({ children }: DeploymentLayoutProps) {
-  return <div>{children ?? "DeploymentLayout"}</div>;
+  return <div className="flex flex-1 flex-col">{children ?? "DeploymentLayout"}</div>;
 }
