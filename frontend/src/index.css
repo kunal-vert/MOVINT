@@ -22,3 +22,43 @@ body,
 body {
   min-height: 100vh;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Eden sign-in background + grain overlay                            */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .eden-bg {
+    background-color: #030303;
+    color-scheme: dark;
+    background-image:
+      radial-gradient(38% 34% at 3% 38%, rgba(70, 70, 70, 0.40), transparent 70%),
+      radial-gradient(34% 40% at 98% 30%, rgba(80, 80, 80, 0.40), transparent 70%),
+      radial-gradient(30% 26% at 92% 78%, rgba(60, 60, 60, 0.30), transparent 70%),
+      radial-gradient(28% 24% at 6% 88%, rgba(50, 50, 50, 0.28), transparent 70%),
+      radial-gradient(40% 22% at 50% 0%, rgba(40, 40, 40, 0.25), transparent 70%);
+  }
+
+  .eden-grain::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.16;
+    mix-blend-mode: screen;
+    animation: grain 60s linear infinite;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='n' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.85  0 0 0 0 0.85  0 0 0 0 0.85  0 0 0 2.4 -1.0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+}
+
+@keyframes grain {
+  to {
+    background-position: 256px 512px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eden-grain::before {
+    animation: none;
+  }
+}
