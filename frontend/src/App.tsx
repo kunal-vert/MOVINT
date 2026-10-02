@@ -3,6 +3,9 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import PageNotFound from './components/common/PageNotFound'
 import Alerts from './pages/Alerts'
 import Deployment from './pages/Deployment'
+import UiDeployment from './components/deployment/UiDeployment'
+import deploymentPoints from './components/deployment/deploymentPoints'
+import RoutePreview from './components/common/RoutePreview'
 import Geomap from './pages/Geomap'
 import Tracking from './pages/Tracking'
 
@@ -15,7 +18,12 @@ export default function App() {
         <Route path="/tracking" element={<Tracking />} />
         <Route path="/alerts" element={<Alerts />} />
         <Route path="/geomap" element={<Geomap />} />
-        <Route path="/deployment" element={<Deployment />} />
+        <Route path="/deployment" element={<UiDeployment />}>
+          <Route index element={<Deployment />} />
+          {deploymentPoints.map(({ label, path }) => (
+            <Route key={path} path={path} element={<RoutePreview fileName={label} />} />
+          ))}
+        </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </div>
