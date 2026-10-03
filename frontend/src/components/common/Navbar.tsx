@@ -34,14 +34,14 @@ export default function Navbar() {
       </div>
 
       <div className="group relative justify-self-end max-[600px]:col-start-2 max-[600px]:row-start-1">
-        <Link
-          className="inline-flex items-center gap-2 text-[0.92rem] text-white/80 no-underline transition-colors duration-[160ms] hover:text-white focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-white/80 focus-visible:outline-offset-[5px] max-[600px]:text-[0.82rem]"
-          to="/deployment"
+        <button
+          type="button"
+          className="inline-flex cursor-pointer items-center gap-2 border-0 bg-transparent p-0 font-[inherit] text-[0.92rem] text-white/80 transition-colors duration-[160ms] hover:text-white focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-white/80 focus-visible:outline-offset-[5px] max-[600px]:text-[0.82rem]"
           aria-haspopup="true"
         >
           Deployment
           <PlusIcon className="h-3.5 w-3.5 fill-current" />
-        </Link>
+        </button>
 
         <div className="invisible pointer-events-none absolute right-0 top-full z-50 w-56 translate-y-1 pt-2 opacity-0 transition-[opacity,transform] duration-150 group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100">
           <div className="rounded-xl border border-white/10 bg-[rgb(12_16_19_/_0.96)] p-2 shadow-2xl backdrop-blur-xl">
