@@ -9,13 +9,14 @@ import RoutePreview from './components/common/RoutePreview'
 import Geomap from './pages/Geomap'
 import Tracking from './pages/Tracking'
 import EdenSignIn from './components/auth/EdenSignIn'
+import TravelerForm from './components/immigration/TravelerForm'
 
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<EdenSignIn />} />
       <Route path="/*" element={
-    <div className="flex min-h-screen flex-col bg-black px-8 pt-[22px] max-[600px]:px-[14px] max-[600px]:pt-[14px]">
+    <div className="dark flex min-h-screen flex-col bg-black px-8 pt-5.5 max-[600px]:px-3.5 max-[600px]:pt-3.5">
       <Navbar />
       <Routes>
         <Route path="/" element={<Navigate to="/tracking" replace />} />
@@ -25,7 +26,17 @@ export default function App() {
         <Route path="/deployment" element={<UiDeployment />}>
           <Route index element={<Deployment />} />
           {deploymentPoints.map(({ label, path }) => (
-            <Route key={path} path={path} element={<RoutePreview fileName={label} />} />
+            <Route
+              key={path}
+              path={path}
+              element={
+                path === 'airport' ? (
+                  <TravelerForm />
+                ) : (
+                  <RoutePreview fileName={label} />
+                )
+              }
+            />
           ))}
         </Route>
         <Route path="*" element={<PageNotFound />} />
