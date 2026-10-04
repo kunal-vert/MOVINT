@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
-from app.db.model import Checkpoint, Journey, Permit, Traveler
+from app.db.models import Checkpoint, Journey, Permit, Traveler
 from app.schemas.p import (
     RegisterTravelerRequest,
     RegisterTravelerResponse,
